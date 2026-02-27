@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Literacy Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .question {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .name-field {
+            background: #e8f4f8;
+            border-left-color: #2196F3;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 2px solid #2196F3;
+            margin-top: 10px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .score.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .score.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .answer-review {
+            margin-top: 20px;
+        }
+
+        .answer-item {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ccc;
+        }
+
+        .answer-item.correct {
+            border-left-color: #28a745;
+            background: #f1f9f3;
+        }
+
+        .answer-item.incorrect {
+            border-left-color: #dc3545;
+            background: #fdf3f4;
+        }
+
+        .answer-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .your-answer, .correct-answer {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+
+        .correct-answer {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .restart-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Computer Literacy Test</h1>
+            <p>Test your knowledge of essential computer skills - 25 random questions</p>
+        </div>
+
+        <div class="content">
+            <form id="testForm">
+                <div class="question name-field">
+                    <div class="question-text" style="color: #1976D2;">Please enter your name:</div>
+                    <input type="text" id="userName" name="userName" required class="name-input">
+                </div>
+                <div id="questionsContainer"></div>
+                <button type="submit" class="submit-btn">Submit Test</button>
+            </form>
+
+            <div class="results" id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Google Form submission function
+        async function submitResultsToGoogleSheet(data) {
+            const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSc8nNHh3ZChbwG90dp5OBKCMc1drfsSSA-IdYB2AuuEkMwGkw/formResponse';
+
+            const formData = new FormData();
+            formData.append('entry.976025315', data.name);
+            formData.append('entry.1021017232', data.score);
+            formData.append('entry.1995603292', data.percentage);
+            formData.append('entry.1535109503', data.incorrectAnswers);
+
+            try {
+                await fetch(formUrl, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors'
+                });
+                console.log('Results submitted successfully');
+            } catch (e) {
+                console.error('Error submitting form', e);
+            }
+        }
+
+        // All 80 questions
+        const allQuestions = {
+            q1: {
+                text: 'What does CPU stand for?',
+                options: {
+                    a: 'Central Processing Unit',
+                    b: 'Computer Personal Unit',
+                    c: 'Central Program Utility',
+                    d: 'Computer Processing Utility'
+                },
+                correct: 'a'
+            },
+            q2: {
+                text: 'Which of the following is an example of a web browser?',
+                options: {
+                    a: 'Microsoft Word',
+                    b: 'Google Chrome',
+                    c: 'Adobe Photoshop',
+                    d: 'Windows Media Player'
+                },
+                correct: 'b'
+            },
+            q3: {
+                text: 'What does RAM stand for?',
+                options: {
+                    a: 'Random Access Memory',
+                    b: 'Read Access Memory',
+                    c: 'Rapid Application Memory',
+                    d: 'Remote Access Module'
+                },
+                correct: 'a'
+            },
+            q4: {
+                text: 'What is phishing?',
+                options: {
+                    a: 'A method to speed up your computer',
+                    b: 'A type of computer virus',
+                    c: 'A fraudulent attempt to obtain sensitive information',
+                    d: 'A way to connect to the internet'
+                },
+                correct: 'c'
+            },
+            q5: {
+                text: 'Which key combination is commonly used to copy text?',
+                options: {
+                    a: 'Ctrl + X',
+                    b: 'Ctrl + C',
+                    c: 'Ctrl + V',
+                    d: 'Ctrl + Z'
+                },
+                correct: 'b'
+            },
+            q6: {
+                text: 'What does URL stand for?',
+                options: {
+                    a: 'Universal Resource Locator',
+                    b: 'Uniform Resource Locator',
+                    c: 'Universal Reference Link',
+                    d: 'Uniform Reference Locator'
+                },
+                correct: 'b'
+            },
+            q7: {
+                text: 'Which of these is a common file extension for images?',
+                options: {
+                    a: '.docx',
+                    b: '.jpg',
+                    c: '.xlsx',
+                    d: '.txt'
+                },
+                correct: 'b'
+            },
+            q8: {
+                text: 'What is cloud storage?',
+                options: {
+                    a: 'Storage inside your computer',
+                    b: 'Storage on remote servers accessed via the internet',
+                    c: 'A type of external hard drive',
+                    d: 'Storage for weather data'
+                },
+                correct: 'b'
+            },
+            q9: {
+                text: 'What is a strong password characteristic?',
+                options: {
+                    a: 'Using your name and birthdate',
+                    b: 'Using the same password for all accounts',
+                    c: 'A mix of uppercase, lowercase, numbers, and symbols',
+                    d: 'A short, easy-to-remember word'
+                },
+                correct: 'c'
+            },
+            q10: {
+                text: 'What is the purpose of an operating system?',
+                options: {
+                    a: 'To browse the internet',
+                    b: 'To manage computer hardware and software resources',
+                    c: 'To create documents',
+                    d: 'To protect against viruses'
+                },
+                correct: 'b'
+            },
+            q11: {
+                text: 'How do you access the Start Menu in Windows?',
+                options: {
+                    a: 'Press the Windows key or click the Windows icon',
+                    b: 'Press Ctrl + Alt + Delete',
+                    c: 'Right-click on the desktop',
+                    d: 'Press Alt + Tab'
+                },
+                correct: 'a'
+            },
+            q12: {
+                text: 'What does Ctrl + V do?',
+                options: {
+                    a: 'Copy',
+                    b: 'Paste',
+                    c: 'Cut',
+                    d: 'Undo'
+                },
+                correct: 'b'
+            },
+            q13: {
+                text: 'To send an email to multiple people without them seeing each other\'s addresses, you should use:',
+                options: {
+                    a: 'To field',
+                    b: 'CC field',
+                    c: 'BCC field',
+                    d: 'Subject field'
+                },
+                correct: 'c'
+            },
+            q14: {
+                text: 'What is the keyboard shortcut to save a document?',
+                options: {
+                    a: 'Ctrl + S',
+                    b: 'Ctrl + P',
+                    c: 'Ctrl + A',
+                    d: 'Ctrl + O'
+                },
+                correct: 'a'
+            },
+            q15: {
+                text: 'What does CC mean in email?',
+                options: {
+                    a: 'Computer Copy',
+                    b: 'Carbon Copy',
+                    c: 'Central Copy',
+                    d: 'Contact Copy'
+                },
+                correct: 'b'
+            },
+            q16: {
+                text: 'Which key combination allows you to undo your last action?',
+                options: {
+                    a: 'Ctrl + Y',
+                    b: 'Ctrl + Z',
+                    c: 'Ctrl + U',
+                    d: 'Ctrl + R'
+                },
+                correct: 'b'
+            },
+            q17: {
+                text: 'To refresh a webpage in your browser, you can press:',
+                options: {
+                    a: 'F5',
+                    b: 'F1',
+                    c: 'F12',
+                    d: 'F8'
+                },
+                correct: 'a'
+            },
+            q18: {
+                text: 'What is the purpose of an email attachment?',
+                options: {
+                    a: 'To send files along with your email message',
+                    b: 'To make your email look prettier',
+                    c: 'To verify your identity',
+                    d: 'To block spam emails'
+                },
+                correct: 'a'
+            },
+            q19: {
+                text: 'Which key combination selects all text in a document?',
+                options: {
+                    a: 'Ctrl + A',
+                    b: 'Ctrl + S',
+                    c: 'Ctrl + E',
+                    d: 'Ctrl + D'
+                },
+                correct: 'a'
+            },
+            q20: {
+                text: 'Where are deleted files typically moved to on Windows?',
+                options: {
+                    a: 'Trash Bin',
+                    b: 'Recycle Bin',
+                    c: 'Delete Folder',
+                    d: 'Lost Files'
+                },
+                correct: 'b'
+            },
+            q21: {
+                text: 'What does "File Explorer" allow you to do in Windows?',
+                options: {
+                    a: 'Browse the internet',
+                    b: 'Browse and manage files and folders on your computer',
+                    c: 'Edit photos',
+                    d: 'Play videos'
+                },
+                correct: 'b'
+            },
+            q22: {
+                text: 'How do you open a new tab in most web browsers?',
+                options: {
+                    a: 'Ctrl + T',
+                    b: 'Ctrl + N',
+                    c: 'Ctrl + O',
+                    d: 'Ctrl + B'
+                },
+                correct: 'a'
+            },
+            q23: {
+                text: 'What does Ctrl + X do?',
+                options: {
+                    a: 'Copy',
+                    b: 'Paste',
+                    c: 'Cut',
+                    d: 'Exit'
+                },
+                correct: 'c'
+            },
+            q24: {
+                text: 'When saving a file, what is the file name extension .docx associated with?',
+                options: {
+                    a: 'Microsoft Word document',
+                    b: 'Image file',
+                    c: 'Video file',
+                    d: 'Spreadsheet file'
+                },
+                correct: 'a'
+            },
+            q25: {
+                text: 'What happens when you right-click on a file?',
+                options: {
+                    a: 'The file is deleted',
+                    b: 'A context menu appears with various options',
+                    c: 'The file opens',
+                    d: 'Nothing happens'
+                },
+                correct: 'b'
+            },
+            q26: {
+                text: 'How can you search for a program or file in Windows?',
+                options: {
+                    a: 'Type in the Start Menu search box',
+                    b: 'Look through every folder manually',
+                    c: 'Restart your computer',
+                    d: 'Use Ctrl + Alt + Delete'
+                },
+                correct: 'a'
+            },
+            q27: {
+                text: 'What is a browser bookmark used for?',
+                options: {
+                    a: 'To save websites for easy access later',
+                    b: 'To delete browsing history',
+                    c: 'To print web pages',
+                    d: 'To block advertisements'
+                },
+                correct: 'a'
+            },
+            q28: {
+                text: 'What key do you press to print a document?',
+                options: {
+                    a: 'Ctrl + S',
+                    b: 'Ctrl + P',
+                    c: 'Ctrl + O',
+                    d: 'Ctrl + D'
+                },
+                correct: 'b'
+            },
+            q29: {
+                text: 'How do you close a browser tab?',
+                options: {
+                    a: 'Ctrl + W or click the X on the tab',
+                    b: 'Ctrl + Q',
+                    c: 'Alt + F4',
+                    d: 'Ctrl + E'
+                },
+                correct: 'a'
+            },
+            q30: {
+                text: 'Where is the address bar located in a web browser?',
+                options: {
+                    a: 'At the top where you type web addresses',
+                    b: 'At the bottom of the screen',
+                    c: 'On the right side',
+                    d: 'In the Start Menu'
+                },
+                correct: 'a'
+            },
+            q31: {
+                text: 'What does "Save As" allow you to do that "Save" does not?',
+                options: {
+                    a: 'Choose a new name or location for the file',
+                    b: 'Save the file faster',
+                    c: 'Delete the original file',
+                    d: 'Email the file'
+                },
+                correct: 'a'
+            },
+            q32: {
+                text: 'To reply to an email, you typically click:',
+                options: {
+                    a: 'Forward',
+                    b: 'Reply',
+                    c: 'Delete',
+                    d: 'Compose'
+                },
+                correct: 'b'
+            },
+            q33: {
+                text: 'What is the taskbar in Windows?',
+                options: {
+                    a: 'The bar at the bottom showing open programs and the Start button',
+                    b: 'A list of tasks you need to complete',
+                    c: 'The desktop background',
+                    d: 'A web browser toolbar'
+                },
+                correct: 'a'
+            },
+            q34: {
+                text: 'What does Ctrl + F do in most programs?',
+                options: {
+                    a: 'Opens the Find/Search function',
+                    b: 'Opens a new file',
+                    c: 'Formats text',
+                    d: 'Closes the program'
+                },
+                correct: 'a'
+            },
+            q35: {
+                text: 'How do you forward an email to someone else?',
+                options: {
+                    a: 'Click the Forward button and enter the recipient\'s email',
+                    b: 'Click Reply and add more people',
+                    c: 'Copy and paste the email into a new message',
+                    d: 'Print the email and mail it'
+                },
+                correct: 'a'
+            },
+            q36: {
+                text: 'What is the Desktop in Windows?',
+                options: {
+                    a: 'The main screen showing icons and background',
+                    b: 'A type of computer',
+                    c: 'A folder containing documents',
+                    d: 'A web browser'
+                },
+                correct: 'a'
+            },
+            q37: {
+                text: 'How do you switch between open programs on Windows?',
+                options: {
+                    a: 'Alt + Tab',
+                    b: 'Ctrl + Tab',
+                    c: 'Shift + Tab',
+                    d: 'Windows + Tab'
+                },
+                correct: 'a'
+            },
+            q38: {
+                text: 'What does double-clicking on a file typically do?',
+                options: {
+                    a: 'Opens the file',
+                    b: 'Deletes the file',
+                    c: 'Copies the file',
+                    d: 'Renames the file'
+                },
+                correct: 'a'
+            },
+            q39: {
+                text: 'What is the file extension for a PDF document?',
+                options: {
+                    a: '.pdf',
+                    b: '.doc',
+                    c: '.txt',
+                    d: '.ppt'
+                },
+                correct: 'a'
+            },
+            q40: {
+                text: 'How do you minimize a window?',
+                options: {
+                    a: 'Click the minus/dash button in the top corner',
+                    b: 'Click the X button',
+                    c: 'Press Delete',
+                    d: 'Press Escape'
+                },
+                correct: 'a'
+            },
+            q41: {
+                text: 'What does "downloading" mean?',
+                options: {
+                    a: 'Transferring files from the internet to your computer',
+                    b: 'Deleting files from your computer',
+                    c: 'Sending files to someone else',
+                    d: 'Backing up your files'
+                },
+                correct: 'a'
+            },
+            q42: {
+                text: 'Where do most web browsers save downloaded files by default?',
+                options: {
+                    a: 'Downloads folder',
+                    b: 'Desktop',
+                    c: 'Documents folder',
+                    d: 'Pictures folder'
+                },
+                correct: 'a'
+            },
+            q43: {
+                text: 'What does it mean to "drag and drop" a file?',
+                options: {
+                    a: 'Click, hold, move the file to a new location, then release',
+                    b: 'Delete a file by dropping it',
+                    c: 'Copy a file using keyboard shortcuts',
+                    d: 'Rename a file'
+                },
+                correct: 'a'
+            },
+            q44: {
+                text: 'How do you create a new folder in Windows?',
+                options: {
+                    a: 'Right-click and select "New Folder"',
+                    b: 'Press Delete',
+                    c: 'Press Ctrl + N',
+                    d: 'Double-click the desktop'
+                },
+                correct: 'a'
+            },
+            q45: {
+                text: 'What is spam email?',
+                options: {
+                    a: 'Unwanted or junk email messages',
+                    b: 'Important work emails',
+                    c: 'Emails with attachments',
+                    d: 'Emails from friends'
+                },
+                correct: 'a'
+            },
+            q46: {
+                text: 'What does Ctrl + Home do in a document?',
+                options: {
+                    a: 'Moves to the beginning of the document',
+                    b: 'Saves the document',
+                    c: 'Closes the document',
+                    d: 'Opens the home page'
+                },
+                correct: 'a'
+            },
+            q47: {
+                text: 'How do you rename a file in Windows?',
+                options: {
+                    a: 'Right-click the file and select "Rename" or press F2',
+                    b: 'Double-click the file',
+                    c: 'Delete and recreate the file',
+                    d: 'Press Ctrl + R'
+                },
+                correct: 'a'
+            },
+            q48: {
+                text: 'What is the purpose of the subject line in an email?',
+                options: {
+                    a: 'To briefly describe what the email is about',
+                    b: 'To attach files',
+                    c: 'To send the email',
+                    d: 'To delete the email'
+                },
+                correct: 'a'
+            },
+            q49: {
+                text: 'What does "logging out" mean?',
+                options: {
+                    a: 'Signing out of your account or session',
+                    b: 'Turning off your computer',
+                    c: 'Deleting your account',
+                    d: 'Closing a program'
+                },
+                correct: 'a'
+            },
+            q50: {
+                text: 'What does pressing the Backspace key do?',
+                options: {
+                    a: 'Deletes the character to the left of the cursor',
+                    b: 'Deletes the character to the right of the cursor',
+                    c: 'Saves the document',
+                    d: 'Opens a new window'
+                },
+                correct: 'a'
+            },
+            q51: {
+                text: 'What does Ctrl + B do in most text editors?',
+                options: {
+                    a: 'Makes text bold',
+                    b: 'Creates a bookmark',
+                    c: 'Opens a browser',
+                    d: 'Closes the file'
+                },
+                correct: 'a'
+            },
+            q52: {
+                text: 'What is malware?',
+                options: {
+                    a: 'Software designed to harm or exploit computers',
+                    b: 'A type of email service',
+                    c: 'A computer component',
+                    d: 'A file storage system'
+                },
+                correct: 'a'
+            },
+            q53: {
+                text: 'What does Wi-Fi allow you to do?',
+                options: {
+                    a: 'Connect to the internet wirelessly',
+                    b: 'Save files to the cloud',
+                    c: 'Print documents',
+                    d: 'Charge your computer'
+                },
+                correct: 'a'
+            },
+            q54: {
+                text: 'What is the purpose of antivirus software?',
+                options: {
+                    a: 'To protect your computer from malicious programs',
+                    b: 'To speed up your internet connection',
+                    c: 'To organize your files',
+                    d: 'To edit documents'
+                },
+                correct: 'a'
+            },
+            q55: {
+                text: 'What does .xlsx file extension represent?',
+                options: {
+                    a: 'Microsoft Excel spreadsheet',
+                    b: 'Text document',
+                    c: 'Image file',
+                    d: 'Video file'
+                },
+                correct: 'a'
+            },
+            q56: {
+                text: 'What does Ctrl + End do in a document?',
+                options: {
+                    a: 'Moves to the end of the document',
+                    b: 'Closes the document',
+                    c: 'Saves the document',
+                    d: 'Prints the document'
+                },
+                correct: 'a'
+            },
+            q57: {
+                text: 'What is a USB port used for?',
+                options: {
+                    a: 'Connecting external devices to your computer',
+                    b: 'Connecting to the internet',
+                    c: 'Charging your phone only',
+                    d: 'Playing audio'
+                },
+                correct: 'a'
+            },
+            q58: {
+                text: 'What does "updating software" mean?',
+                options: {
+                    a: 'Installing the latest version with improvements and fixes',
+                    b: 'Deleting old files',
+                    c: 'Buying new software',
+                    d: 'Restarting your computer'
+                },
+                correct: 'a'
+            },
+            q59: {
+                text: 'What is a cookie in web browsing?',
+                options: {
+                    a: 'A small file that stores information about your website visits',
+                    b: 'A type of virus',
+                    c: 'A browser toolbar',
+                    d: 'An image file'
+                },
+                correct: 'a'
+            },
+            q60: {
+                text: 'What does HTTPS in a website address indicate?',
+                options: {
+                    a: 'The connection is secure and encrypted',
+                    b: 'The website is fast',
+                    c: 'The website has videos',
+                    d: 'The website is free'
+                },
+                correct: 'a'
+            },
+            q61: {
+                text: 'What is the purpose of a firewall?',
+                options: {
+                    a: 'To block unauthorized access to your network',
+                    b: 'To speed up your computer',
+                    c: 'To organize files',
+                    d: 'To print documents'
+                },
+                correct: 'a'
+            },
+            q62: {
+                text: 'What does Ctrl + I do in text editors?',
+                options: {
+                    a: 'Makes text italic',
+                    b: 'Inserts an image',
+                    c: 'Opens internet settings',
+                    d: 'Saves information'
+                },
+                correct: 'a'
+            },
+            q63: {
+                text: 'What is the "Clipboard"?',
+                options: {
+                    a: 'Temporary storage for copied or cut items',
+                    b: 'A type of document',
+                    c: 'A web browser',
+                    d: 'A folder on your desktop'
+                },
+                correct: 'a'
+            },
+            q64: {
+                text: 'What does "rebooting" a computer mean?',
+                options: {
+                    a: 'Restarting the computer',
+                    b: 'Installing new software',
+                    c: 'Deleting files',
+                    d: 'Updating the operating system'
+                },
+                correct: 'a'
+            },
+            q65: {
+                text: 'What is a screenshot?',
+                options: {
+                    a: 'An image of what is displayed on your screen',
+                    b: 'A video recording',
+                    c: 'A type of malware',
+                    d: 'A website template'
+                },
+                correct: 'a'
+            },
+            q66: {
+                text: 'What does Alt + F4 do?',
+                options: {
+                    a: 'Closes the current window or application',
+                    b: 'Opens a new window',
+                    c: 'Saves the file',
+                    d: 'Copies text'
+                },
+                correct: 'a'
+            },
+            q67: {
+                text: 'What is "incognito mode" or "private browsing"?',
+                options: {
+                    a: 'Browsing that doesn\'t save your history or cookies',
+                    b: 'Browsing that is faster',
+                    c: 'Browsing that blocks all websites',
+                    d: 'Browsing only secure websites'
+                },
+                correct: 'a'
+            },
+            q68: {
+                text: 'What does the Delete key do?',
+                options: {
+                    a: 'Deletes the character to the right of the cursor',
+                    b: 'Deletes the character to the left of the cursor',
+                    c: 'Saves the document',
+                    d: 'Closes the window'
+                },
+                correct: 'a'
+            },
+            q69: {
+                text: 'What is the purpose of compressing a file (creating a .zip)?',
+                options: {
+                    a: 'To reduce file size and combine multiple files',
+                    b: 'To delete the file',
+                    c: 'To encrypt the file',
+                    d: 'To edit the file'
+                },
+                correct: 'a'
+            },
+            q70: {
+                text: 'What does "bandwidth" refer to?',
+                options: {
+                    a: 'The amount of data that can be transmitted over an internet connection',
+                    b: 'The size of your hard drive',
+                    c: 'The speed of your processor',
+                    d: 'The number of programs you can run'
+                },
+                correct: 'a'
+            },
+            q71: {
+                text: 'What is two-factor authentication?',
+                options: {
+                    a: 'An extra layer of security requiring two forms of verification',
+                    b: 'Using two passwords',
+                    c: 'Having two email accounts',
+                    d: 'Logging in twice'
+                },
+                correct: 'a'
+            },
+            q72: {
+                text: 'What does Ctrl + U do in text editors?',
+                options: {
+                    a: 'Underlines text',
+                    b: 'Undoes the last action',
+                    c: 'Updates the document',
+                    d: 'Opens utilities'
+                },
+                correct: 'a'
+            },
+            q73: {
+                text: 'What is "streaming"?',
+                options: {
+                    a: 'Watching or listening to content without downloading it first',
+                    b: 'Downloading files',
+                    c: 'Sending emails',
+                    d: 'Printing documents'
+                },
+                correct: 'a'
+            },
+            q74: {
+                text: 'What does Ctrl + Shift + N do in most web browsers?',
+                options: {
+                    a: 'Opens a new incognito/private window',
+                    b: 'Creates a new folder',
+                    c: 'Opens a new tab',
+                    d: 'Opens network settings'
+                },
+                correct: 'a'
+            },
+            q75: {
+                text: 'What is a "driver" in computing?',
+                options: {
+                    a: 'Software that allows the operating system to communicate with hardware',
+                    b: 'A type of storage device',
+                    c: 'A web browser',
+                    d: 'A computer virus'
+                },
+                correct: 'a'
+            },
+            q76: {
+                text: 'What does "pinging" a computer or website mean?',
+                options: {
+                    a: 'Testing the connection to see if it\'s reachable',
+                    b: 'Sending an email',
+                    c: 'Downloading files',
+                    d: 'Installing software'
+                },
+                correct: 'a'
+            },
+            q77: {
+                text: 'What is the Caps Lock key used for?',
+                options: {
+                    a: 'Typing in all capital letters',
+                    b: 'Locking your computer',
+                    c: 'Saving documents',
+                    d: 'Closing windows'
+                },
+                correct: 'a'
+            },
+            q78: {
+                text: 'What does Ctrl + Y do?',
+                options: {
+                    a: 'Redoes the last action that was undone',
+                    b: 'Copies text',
+                    c: 'Opens YouTube',
+                    d: 'Closes the window'
+                },
+                correct: 'a'
+            },
+            q79: {
+                text: 'What is a "hyperlink"?',
+                options: {
+                    a: 'Clickable text or image that takes you to another location',
+                    b: 'A fast internet connection',
+                    c: 'A type of virus',
+                    d: 'A printing option'
+                },
+                correct: 'a'
+            },
+            q80: {
+                text: 'What does "booting" a computer mean?',
+                options: {
+                    a: 'Starting up the computer',
+                    b: 'Shutting down the computer',
+                    c: 'Installing software',
+                    d: 'Deleting files'
+                },
+                correct: 'a'
+            }
+        };
+
+        // Function to shuffle array and pick random questions
+        function getRandomQuestions(allQuestions, count) {
+            const questionKeys = Object.keys(allQuestions);
+            const shuffled = questionKeys.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        // Get 25 random questions
+        const selectedQuestionIds = getRandomQuestions(allQuestions, 25);
+        const selectedQuestions = {};
+        selectedQuestionIds.forEach(id => {
+            selectedQuestions[id] = allQuestions[id];
+        });
+
+        // Generate questions HTML
+        const questionsContainer = document.getElementById('questionsContainer');
+        let questionNumber = 1;
+
+        selectedQuestionIds.forEach(questionId => {
+            const q = allQuestions[questionId];
+            const questionHTML = `
+                <div class="question">
+                    <div class="question-text">${questionNumber}. ${q.text}</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="${questionId}" value="a" id="${questionId}a">
+                            <label for="${questionId}a">${q.options.a}</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="${questionId}" value="b" id="${questionId}b">
+                            <label for="${questionId}b">${q.options.b}</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="${questionId}" value="c" id="${questionId}c">
+                            <label for="${questionId}c">${q.options.c}</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="${questionId}" value="d" id="${questionId}d">
+                            <label for="${questionId}d">${q.options.d}</label>
+                        </div>
+                    </div>
+                </div>
+            `;
+            questionsContainer.innerHTML += questionHTML;
+            questionNumber++;
+        });
+
+        // Form submission handler
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let score = 0;
+            let totalQuestions = selectedQuestionIds.length;
+            let reviewHTML = '<h2 style="margin-bottom: 20px; color: #333;">Answer Review</h2>';
+            let incorrectAnswers = [];
+
+            selectedQuestionIds.forEach(questionId => {
+                const q = allQuestions[questionId];
+                const selected = document.querySelector(`input[name="${questionId}"]:checked`);
+                const userAnswer = selected ? selected.value : null;
+
+                const isCorrect = userAnswer === q.correct;
+                if (isCorrect) {
+                    score++;
+                } else {
+                    // Store question text instead of question ID
+                    incorrectAnswers.push(q.text);
+                }
+
+                const correctClass = isCorrect ? 'correct' : 'incorrect';
+                const statusIcon = isCorrect ? '✓' : '✗';
+
+                reviewHTML += `
+                    <div class="answer-item ${correctClass}">
+                        <div class="answer-label">${statusIcon} ${q.text}</div>
+                        <div class="your-answer">Your answer: ${userAnswer ? q.options[userAnswer] : 'Not answered'}</div>
+                        ${!isCorrect ? `<div class="correct-answer">Correct answer: ${q.options[q.correct]}</div>` : ''}
+                    </div>
+                `;
+            });
+
+            const percentage = (score / totalQuestions) * 100;
+            const passed = percentage >= 70;
+            const passClass = passed ? 'pass' : 'fail';
+            const userName = document.getElementById('userName').value;
+
+            // Prepare data for Google Sheet submission
+            const resultsData = {
+                name: userName,
+                score: score,
+                percentage: percentage.toFixed(0),
+                incorrectAnswers: incorrectAnswers.length > 0 ? incorrectAnswers.join(' | ') : 'None - Perfect Score!'
+            };
+
+            // Submit results to Google Sheet
+            submitResultsToGoogleSheet(resultsData);
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="score ${passClass}">
+                    <div style="font-size: 32px; margin-bottom: 10px;">${passed ? '🎉' : '📚'}</div>
+                    <div>Your Score: ${score} / ${totalQuestions}</div>
+                    <div style="font-size: 20px; margin-top: 10px;">${percentage.toFixed(0)}%</div>
+                    <div style="font-size: 16px; margin-top: 10px; font-weight: normal;">
+                        ${passed ? 'Congratulations! You passed!' : 'Keep learning! You need 70% to pass.'}
+                    </div>
+                    <div style="font-size: 14px; margin-top: 15px; padding-top: 15px; border-top: 2px solid rgba(0,0,0,0.1); font-weight: normal; opacity: 0.8;">
+                        ✓ Your results have been submitted successfully
+                    </div>
+                </div>
+                <div class="answer-review">
+                    ${reviewHTML}
+                </div>
+                <button class="restart-btn" onclick="location.reload()">Restart Test</button>
+            `;
+
+            resultsDiv.classList.add('show');
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    </script>
+</body>
+</html>
