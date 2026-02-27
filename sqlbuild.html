@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Query Builder — Service & Case Note Check</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: #0a0e17;
+    color: #c8ccd4;
+    font-family: 'IBM Plex Mono', 'Cascadia Code', 'Fira Code', monospace;
+    padding: 24px;
+  }
+  .header { margin-bottom: 32px; border-bottom: 1px solid #1e2a3a; padding-bottom: 20px; }
+  .header h1 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 22px; font-weight: 700; color: #e2e6ed;
+    margin-bottom: 6px; letter-spacing: -0.3px;
+  }
+  .header h1 span { color: #4a9eff; }
+  .header p { font-size: 13px; color: #5a6577; }
+  .layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+  .panel {
+    background: #111827; border: 1px solid #1e2a3a;
+    border-radius: 8px; padding: 16px;
+  }
+  .label {
+    display: block; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: #4a9eff; margin-bottom: 4px;
+  }
+  .hint { font-size: 11px; color: #5a6577; margin-bottom: 10px; line-height: 1.5; }
+  .date-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
+  .date-col { flex: 1; }
+  .date-col .sub-label { font-size: 10px; color: #5a6577; margin-bottom: 4px; }
+  .date-arrow { color: #3a4558; margin-top: 16px; }
+  input[type="date"], textarea {
+    width: 100%; background: #0a0e17; border: 1px solid #2a3548;
+    border-radius: 4px; color: #e2e6ed; padding: 8px 10px;
+    font-size: 13px; font-family: inherit; outline: none;
+  }
+  input[type="date"]:focus, textarea:focus { border-color: #4a9eff; }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+  textarea {
+    min-height: 200px; line-height: 1.6; resize: vertical;
+  }
+  textarea::placeholder { color: #3a4558; }
+  .badges { margin-top: 10px; display: flex; gap: 12px; font-size: 12px; }
+  .badge-green {
+    background: #1a2a1a; color: #4ade80; padding: 3px 8px;
+    border-radius: 4px; border: 1px solid #2a3a2a;
+  }
+  .badge-purple {
+    background: #1a1a2e; color: #818cf8; padding: 3px 8px;
+    border-radius: 4px; border: 1px solid #2a2a3e;
+  }
+  .btn-clear {
+    background: transparent; border: 1px solid #2a3548; border-radius: 6px;
+    color: #5a6577; padding: 8px; font-size: 12px; font-family: inherit;
+    cursor: pointer; width: 100%; margin-top: 12px;
+  }
+  .btn-clear:hover { border-color: #4a6580; color: #8a96a7; }
+  .output-panel { background: #111827; border: 1px solid #1e2a3a; border-radius: 8px; overflow: hidden; }
+  .output-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; border-bottom: 1px solid #1e2a3a; background: #0d1320;
+  }
+  .output-header .label { margin-bottom: 0; }
+  .btn-copy {
+    background: #1e3a5f; border: none; border-radius: 4px;
+    color: #4a9eff; padding: 6px 14px; font-size: 12px;
+    font-weight: 600; font-family: inherit; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-copy:hover { background: #264a6f; }
+  .btn-copy.copied { background: #166534; color: #4ade80; }
+  .output-body { padding: 16px; max-height: 75vh; overflow: auto; }
+  .output-body pre {
+    margin: 0; font-size: 12px; line-height: 1.65;
+    color: #a8b2c1; white-space: pre-wrap; word-break: break-all;
+  }
+  .placeholder-msg {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 300px; color: #3a4558; font-size: 13px; font-style: italic;
+  }
+  .left-inputs { display: flex; flex-direction: column; gap: 20px; }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>⚡</span> SQL Query Builder</h1>
+  <p>Service Code & Case Note Check — Paste identifiers, get SQL</p>
+</div>
+
+<div class="layout">
+  <!-- Left Panel -->
+  <div class="left-inputs">
+    <div class="panel">
+      <label class="label">Date Range</label>
+      <div class="date-row">
+        <div class="date-col">
+          <div class="sub-label">START</div>
+          <input type="date" id="startDate">
+        </div>
+        <span class="date-arrow">→</span>
+        <div class="date-col">
+          <div class="sub-label">END</div>
+          <input type="date" id="endDate">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <label class="label">Identifiers</label>
+      <p class="hint">
+        Paste state IDs, usernames, or login names.<br>
+        One per line, or comma/tab separated. Mix freely.
+      </p>
+      <textarea id="rawInput" placeholder="1624769&#10;briannakidd&#10;leterrence&#10;405496&#10;4172819" spellcheck="false"></textarea>
+      <div class="badges" id="badges"></div>
+    </div>
+
+    <button class="btn-clear" id="btnClear" style="display:none;">Clear All</button>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="output-panel">
+    <div class="output-header">
+      <span class="label">Generated SQL</span>
+      <button class="btn-copy" id="btnCopy" style="display:none;">Copy SQL</button>
+    </div>
+    <div class="output-body">
+      <div class="placeholder-msg" id="placeholder">← Paste identifiers to generate SQL</div>
+      <pre id="sqlOutput" style="display:none;"></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+const SQL_TEMPLATE = `-- ============================================================
+-- SERVICE CODE & CASE NOTE CHECK FOR INDIVIDUALS IN A TIME FRAME
+-- ============================================================
+
+DECLARE @StartDate DATE = '{{START_DATE}}';
+DECLARE @EndDate   DATE = '{{END_DATE}}';
+
+SELECT
+    indstaff.username          AS [System Username],
+    users.col_loginname        AS [Login Name],
+    ind.col_UserID             AS [User ID],
+    indstaff.stateid           AS [State ID],
+    RTRIM(ind.firstname)       AS [First Name],
+    RTRIM(ind.lastname)        AS [Last Name],
+
+    CASE WHEN svc.service_count > 0 THEN 'YES' ELSE 'NO' END AS [Received Service],
+    ISNULL(svc.service_count, 0) AS [Service Count],
+    svc.first_service_date AS [First Service Date],
+    svc.last_service_date  AS [Last Service Date],
+
+    CASE WHEN cn.casenote_count > 0 THEN 'YES' ELSE 'NO' END AS [Received Case Note],
+    ISNULL(cn.casenote_count, 0) AS [Case Note Count],
+    cn.first_cn_date AS [First Case Note Date],
+    cn.last_cn_date  AS [Last Case Note Date],
+
+    CASE
+        WHEN ISNULL(svc.service_count, 0) > 0 AND ISNULL(cn.casenote_count, 0) > 0 THEN 'BOTH'
+        WHEN ISNULL(svc.service_count, 0) > 0 THEN 'SERVICE ONLY'
+        WHEN ISNULL(cn.casenote_count, 0) > 0 THEN 'CASE NOTE ONLY'
+        ELSE 'NEITHER'
+    END AS [Overall Status]
+
+FROM
+    dbo.indstaff indstaff WITH (NOLOCK)
+    LEFT JOIN dbo.ind ind WITH (NOLOCK) ON ind.username = indstaff.username
+    LEFT JOIN dbo.users users WITH (NOLOCK)
+        ON users.col_loginname = indstaff.username
+        OR users.col_loginname = CAST(ind.col_UserID AS VARCHAR(50))
+    LEFT JOIN (
+        SELECT sp.username, COUNT(*) AS service_count,
+            MIN(sp.actualdate) AS first_service_date,
+            MAX(sp.actualdate) AS last_service_date
+        FROM dbo.serviceplan sp WITH (NOLOCK)
+        WHERE sp.actualdate >= @StartDate AND sp.actualdate < @EndDate
+        GROUP BY sp.username
+    ) svc ON svc.username = indstaff.username
+    LEFT JOIN (
+        SELECT cn.username, COUNT(*) AS casenote_count,
+            MIN(cn.col_contactdate) AS first_cn_date,
+            MAX(cn.col_contactdate) AS last_cn_date
+        FROM dbo.casenotes cn WITH (NOLOCK)
+        WHERE cn.col_contactdate >= @StartDate AND cn.col_contactdate < @EndDate
+        GROUP BY cn.username
+    ) cn ON cn.username = indstaff.username
+
+WHERE
+{{WHERE_CLAUSE}}
+ORDER BY ind.lastname, ind.firstname;`;
+
+function parseIdentifiers(raw) {
+  if (!raw.trim()) return { stateIds: [], textIds: [] };
+  const items = raw.split(/[\n,;\t]+/).map(s => s.trim().replace(/['"]/g, '')).filter(Boolean);
+  const stateIds = [], textIds = [];
+  const seenState = new Set(), seenText = new Set();
+
+  items.forEach(item => {
+    if (/^\d+$/.test(item) && item.length >= 4) {
+      if (!seenState.has(item)) { stateIds.push(item); seenState.add(item); }
+    } else {
+      const lower = item.toLowerCase();
+      if (!seenText.has(lower)) { textIds.push(lower); seenText.add(lower); }
+    }
+  });
+  return { stateIds, textIds };
+}
+
+function buildSQL() {
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  const raw = document.getElementById('rawInput').value;
+  const { stateIds, textIds } = parseIdentifiers(raw);
+
+  // Update badges
+  const badgesEl = document.getElementById('badges');
+  let badgeHTML = '';
+  if (stateIds.length > 0)
+    badgeHTML += `<span class="badge-green">${stateIds.length} state ID${stateIds.length !== 1 ? 's' : ''}</span>`;
+  if (textIds.length > 0)
+    badgeHTML += `<span class="badge-purple">${textIds.length} name${textIds.length !== 1 ? 's' : ''}</span>`;
+  badgesEl.innerHTML = badgeHTML;
+
+  // Show/hide clear button
+  document.getElementById('btnClear').style.display = raw.trim() ? 'block' : 'none';
+
+  // Build WHERE clause
+  const total = stateIds.length + textIds.length;
+  if (total === 0) {
+    document.getElementById('placeholder').style.display = 'flex';
+    document.getElementById('sqlOutput').style.display = 'none';
+    document.getElementById('btnCopy').style.display = 'none';
+    return;
+  }
+
+  const parts = [];
+  if (stateIds.length > 0)
+    parts.push(`    indstaff.stateid IN (${stateIds.join(', ')})`);
+  if (textIds.length > 0) {
+    const quoted = textIds.map(t => `'${t}'`).join(',');
+    parts.push(`    indstaff.username IN (${quoted})`);
+    parts.push(`    users.col_loginname IN (${quoted})`);
+  }
+  const whereClause = parts.join('\n    OR\n');
+
+  const sql = SQL_TEMPLATE
+    .replace('{{START_DATE}}', startDate)
+    .replace('{{END_DATE}}', endDate)
+    .replace('{{WHERE_CLAUSE}}', whereClause);
+
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('sqlOutput').style.display = 'block';
+  document.getElementById('sqlOutput').textContent = sql;
+  document.getElementById('btnCopy').style.display = 'inline-block';
+}
+
+// Set default dates
+function setDefaults() {
+  const today = new Date();
+  const weekAgo = new Date();
+  weekAgo.setDate(today.getDate() - 7);
+  document.getElementById('endDate').value = today.toISOString().slice(0, 10);
+  document.getElementById('startDate').value = weekAgo.toISOString().slice(0, 10);
+}
+
+// Copy to clipboard
+document.getElementById('btnCopy').addEventListener('click', function() {
+  const sql = document.getElementById('sqlOutput').textContent;
+  const btn = this;
+  navigator.clipboard.writeText(sql).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy SQL'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // Fallback: select text
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById('sqlOutput'));
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+});
+
+// Clear button
+document.getElementById('btnClear').addEventListener('click', function() {
+  document.getElementById('rawInput').value = '';
+  buildSQL();
+});
+
+// Wire up live updates
+document.getElementById('rawInput').addEventListener('input', buildSQL);
+document.getElementById('startDate').addEventListener('change', buildSQL);
+document.getElementById('endDate').addEventListener('change', buildSQL);
+
+// Init
+setDefaults();
+</script>
+</body>
+</html>
