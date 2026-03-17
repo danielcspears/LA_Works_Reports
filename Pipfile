@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 pandas = "*"
 openpyxl = "*"
+PyPDF2 = "*"
+pdfrw = "*"
 
 [dev-packages]
 
