@@ -38,6 +38,7 @@ def main():
             'Direct Supervisor': row.get('Supervisor', ''),
             'Office Address': row.get('Address', ''),
             'Office Name': row.get('Location (Office)', ''),
+            'Location Code': row.get('Location Code', ''),
             'Cost Center': row.get('Cost Center', ''),
             'Effective Date of Assignment': row.get('Date', ''),
             'Property Tag Number': row.get('Property Tag#', ''),
